@@ -1,0 +1,27 @@
+from setuptools import setup, find_packages
+
+setup(
+    name = "python-builtwith",
+    version = "0.1.0",
+    description = "BuiltWith API version 1 client",
+    author = "Clay McClure",
+    author_email = "clay@daemons.net",
+    url = "https://github.com/claymation/python-builtwith",
+    classifiers = [
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
+        'Topic :: Internet :: WWW/HTTP',
+    ],
+    packages = find_packages(),
+    install_requires = [
+        'requests==1.1.0',
+    ],
+    test_suite = 'nose.collector',
+    tests_require = [
+        'httpretty==0.5.12',
+        'nose==1.2.1',
+    ]
+)
