@@ -1,7 +1,7 @@
 python-builtwith
 ================
 
-[BuiltWith][] API version 1 client.
+[BuiltWith][] API versions 1 and 2 client.
 
     >>> from builtwith import BuiltWith
     >>> bw = BuiltWith(YOUR_API_KEY)

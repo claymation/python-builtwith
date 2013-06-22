@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name = "python-builtwith",
     version = "0.1.1",
-    description = "BuiltWith API version 1 client",
+    description = "BuiltWith API versions 1 and 2 client",
     author = "Clay McClure",
     author_email = "clay@daemons.net",
     url = "https://github.com/claymation/python-builtwith",
