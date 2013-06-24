@@ -31,6 +31,9 @@ class UrlTechnologiesSet(object):
 
             self._technologies_by_name[technologies_dict['Name']] = technologies_dict
 
+    def __iter__(self):
+        return iter(self._technologies_by_name.values())
+
     def get_technology_info(self, technology_name):
         return self._technologies_by_name.get(technology_name, None)
 
@@ -48,6 +51,9 @@ class BuiltWithDomainInfo(object):
                 path_entry['Domain'], path_entry.get('SubDomain', None), path_entry['Url'])
             self._technologies_by_url[
                 url_key] = UrlTechnologiesSet(path_entry['Technologies'])
+
+    def __iter__(self):
+        return iter(self._technologies_by_url.values())
 
     @staticmethod
     def __get_url_key(domain, subdomain, path):
