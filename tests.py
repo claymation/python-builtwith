@@ -50,7 +50,7 @@ def test_unsupported_version():
     raise RuntimeError("UnsupportedApiVersion exception not raised when it should have been.")
 
 
-TEST_DATETIME = datetime.datetime(2012, 9, 6, 16, 0)
+TEST_DATETIME = datetime.datetime(2012, 9, 6, 11, 0)
 TEST_DATETIME_STRING = u'/Date(1346972400000)/'
 
 TEST_RESPONSE_JSON = {
