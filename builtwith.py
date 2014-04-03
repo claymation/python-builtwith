@@ -6,28 +6,27 @@ import requests
 ENDPOINTS_BY_API_VERSION = {1: 'http://api.builtwith.com/v1/api.json',
                             2: 'http://api.builtwith.com/v2/api.json'}
 
+VERSION_EXCEPTION_TEMPLATE = 'Version %s'
 
-VERSION_EXCEPTION_TEMPLATE = "Version %s"
+DATETIME_INFORMATION_NAMES = ['FirstDetected', 'LastDetected']
 
 
 class UnsupportedApiVersion(NotImplementedError):
     pass
 
 
-def _convert_string_to_datetime(datetime_string):
-    return datetime.datetime.fromtimestamp(
+def _convert_string_to_utc_datetime(datetime_string):
+    return datetime.datetime.utcfromtimestamp(
         int(re.search("\d+", datetime_string).group(0)) / 1000)
 
 
 class UrlTechnologiesSet(object):
 
     def __init__(self, technologies_list):
-        DATETIME_INFORMATION_NAMES = ["FirstDetected", "LastDetected"]
-
         self._technologies_by_name = {}
         for technologies_dict in technologies_list:
             for name in DATETIME_INFORMATION_NAMES:
-                technologies_dict[name] = _convert_string_to_datetime(technologies_dict[name])
+                technologies_dict[name] = _convert_string_to_utc_datetime(technologies_dict[name])
 
             self._technologies_by_name[technologies_dict['Name']] = technologies_dict
 
@@ -65,27 +64,33 @@ class BuiltWithDomainInfo(object):
     def get_technologies_by_url(self, domain, subdomain, path):
         return self._technologies_by_url.get(self.__get_url_key(domain, subdomain, path), None)
 
+# Example usage:
+# V1:
+#
+# >>> from builtwith import BuiltWith
+# >>> bw = BuiltWith(YOUR_API_KEY)
+# >>> bw.lookup(URL)
+#
+# V2:
+#
+# >>> from builtwith import BuiltWith
+# >>> bw = BuiltWith(YOUR_API_KEY, api_version=2)
+# >>> bw.lookup(URL)
+
 
 class BuiltWith(object):
     """
     BuiltWith API version client.
-
-    V1:
-
-    >>> from builtwith import BuiltWith
-    >>> bw = BuiltWith(YOUR_API_KEY)
-    >>> bw.lookup(URL)
-
-    V2:
-
-    >>> from builtwith import BuiltWith
-    >>> bw = BuiltWith(YOUR_API_KEY, api_version=2)
-    >>> bw.lookup(URL)
     """
 
     def __init__(self, key, api_version=1):
+        """
+        Initialize the client. Requires a BuiltWith API key. Optionally takes in the API version. If no API version is
+        specified, a default of `1` is used.
+        """
+
         if api_version not in ENDPOINTS_BY_API_VERSION.keys():
-            raise UnsupportedApiVersion(VERSION_EXCEPTION_TEMPLATE % (api_version))
+            raise UnsupportedApiVersion(VERSION_EXCEPTION_TEMPLATE % api_version)
 
         self.key = key
         self.api_version = api_version
