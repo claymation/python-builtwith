@@ -1,3 +1,4 @@
+import copy
 import datetime
 import re
 import requests
@@ -24,14 +25,17 @@ class UrlTechnologiesSet(object):
 
     def __init__(self, technologies_list, last_full_builtwith_scan_date=None):
         """
-        Initializes the object using the list of technology dictionaries. Takes an optional parameter for the
-        datetime.date object of the last full BuiltWith scan.
+        Initializes the object using the list of technology dictionaries that are copied and formatted. Takes an
+        optional parameter for the datetime.date object of the last full BuiltWith scan.
         """
 
         self._technologies_by_name = {}
+
         for technologies_dict in technologies_list:
+            copied_technologies_dict = copy.deepcopy(technologies_dict)
+
             for name in DATETIME_INFORMATION_NAMES:
-                technologies_dict[name] = _convert_string_to_utc_datetime(technologies_dict[name])
+                copied_technologies_dict[name] = _convert_string_to_utc_datetime(technologies_dict[name])
 
             # According to the team at BuiltWith, it's best to just use the last "FULL" scan
             # time in the CurrentlyLive determination since BuiltWith doesn't publish their
@@ -39,10 +43,10 @@ class UrlTechnologiesSet(object):
             # successfully detected on "TOPSITE" sites on the the last BuiltWith scan when that's
             # not in fact accurate.
             if last_full_builtwith_scan_date:
-                technologies_dict['CurrentlyLive'] = (
-                    last_full_builtwith_scan_date <= technologies_dict['LastDetected'].date())
+                copied_technologies_dict['CurrentlyLive'] = (
+                    last_full_builtwith_scan_date <= copied_technologies_dict['LastDetected'].date())
 
-            self._technologies_by_name[technologies_dict['Name']] = technologies_dict
+            self._technologies_by_name[technologies_dict['Name']] = copied_technologies_dict
 
     def __iter__(self):
         return iter(self._technologies_by_name.values())
@@ -118,19 +122,19 @@ class BuiltWith(object):
 
         last_full_builtwith_scan_date = None
 
-        params = {
-            'KEY': self.key,
-            'LOOKUP': domain,
-        }
-
-        response = requests.get(ENDPOINTS_BY_API_VERSION[self.api_version], params=params)
-
         if self.api_version == 2:
             last_updates_resp = requests.get(ENDPOINTS_BY_API_VERSION[self.api_version], params={'UPDATE': 1})
             last_updated_data = last_updates_resp.json()
 
             if get_last_full_query:
               last_full_builtwith_scan_date = datetime.datetime.strptime(last_updated_data['FULL'], '%Y-%m-%d').date()
+
+        params = {
+            'KEY': self.key,
+            'LOOKUP': domain,
+        }
+
+        response = requests.get(ENDPOINTS_BY_API_VERSION[self.api_version], params=params)
 
         if self.api_version == 1:
             return response.json()
