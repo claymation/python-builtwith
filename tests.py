@@ -104,7 +104,7 @@ class BuiltWithTests(unittest.TestCase):
 
     @httprettified
     def test_domain_info_object(self):
-        domain_info = BuiltWithDomainInfo(TEST_RESPONSE_JSON, last_full_builtwith_scan=TEST_FULL_SCAN_DATE)
+        domain_info = BuiltWithDomainInfo(TEST_RESPONSE_JSON, last_full_builtwith_scan_date=TEST_FULL_SCAN_DATE)
 
         self.assertListEqual(sorted([(u'example.com', u'', u''), (u'example.com', u'test', u'')]),
                              sorted(domain_info.available_urls()))
