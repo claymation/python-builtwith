@@ -5,7 +5,8 @@ import requests
 
 
 ENDPOINTS_BY_API_VERSION = {1: 'http://api.builtwith.com/v1/api.json',
-                            2: 'http://api.builtwith.com/v2/api.json'}
+                            2: 'http://api.builtwith.com/v2/api.json',
+                            7: 'http://api.builtwith.com/v7/api.json'}
 
 VERSION_EXCEPTION_TEMPLATE = 'Version %s'
 
@@ -16,9 +17,11 @@ class UnsupportedApiVersion(NotImplementedError):
     pass
 
 
-def _convert_string_to_utc_datetime(datetime_string):
-    return datetime.datetime.utcfromtimestamp(
-        int(re.search("\d+", datetime_string).group(0)) / 1000)
+def _convert_timestamp_to_utc_datetime(timestamp):
+    if not isinstance(timestamp, int):
+        timestamp = int(re.search('\d+', timestamp).group(0))
+
+    return datetime.datetime.utcfromtimestamp(timestamp / 1000)
 
 
 class UrlTechnologiesSet(object):
@@ -35,7 +38,7 @@ class UrlTechnologiesSet(object):
             copied_technologies_dict = copy.deepcopy(technologies_dict)
 
             for name in DATETIME_INFORMATION_NAMES:
-                copied_technologies_dict[name] = _convert_string_to_utc_datetime(technologies_dict[name])
+                copied_technologies_dict[name] = _convert_timestamp_to_utc_datetime(technologies_dict[name])
 
             # According to the team at BuiltWith, it's best to just use the last "FULL" scan
             # time in the CurrentlyLive determination since BuiltWith doesn't publish their
@@ -95,6 +98,13 @@ class BuiltWithDomainInfo(object):
 # >>> from builtwith import BuiltWith
 # >>> bw = BuiltWith(YOUR_API_KEY, api_version=2)
 # >>> bw.lookup(URL)
+#
+# V7:
+#
+# >>> from builtwith import BuiltWith
+# >>> bw = BuiltWith(YOUR_API_KEY, api_version=7)
+# >>> bw.lookup(URL)  # look up a single domain
+# >>> bw.lookup([URL1, URL2, ..., URL16])  # or look up up to 16 domains at once
 
 
 class BuiltWith(object):
@@ -122,11 +132,14 @@ class BuiltWith(object):
 
         last_full_builtwith_scan_date = None
 
-        if self.api_version == 2:
+        if self.api_version == 7 and isinstance(domain, list):
+            domain = ','.join(domain)
+
+        if self.api_version in [2, 7]:
             last_updates_resp = requests.get(ENDPOINTS_BY_API_VERSION[self.api_version], params={'UPDATE': 1})
             last_updated_data = last_updates_resp.json()
 
-            if get_last_full_query:
+            if get_last_full_query and last_updated_data['FULL']:
               last_full_builtwith_scan_date = datetime.datetime.strptime(last_updated_data['FULL'], '%Y-%m-%d').date()
 
         params = {
@@ -138,5 +151,10 @@ class BuiltWith(object):
 
         if self.api_version == 1:
             return response.json()
-
-        return BuiltWithDomainInfo(response.json(), last_full_builtwith_scan_date)
+        elif self.api_version == 2:
+            return BuiltWithDomainInfo(response.json(), last_full_builtwith_scan_date)
+        elif self.api_version == 7:
+            domain_info = list()
+            for result in response.json()['Results']:
+                domain_info.append(BuiltWithDomainInfo(result['Result'], last_full_builtwith_scan_date))
+            return domain_info
