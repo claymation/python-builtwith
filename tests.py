@@ -8,6 +8,7 @@ import builtwith
 
 API_VERSION_ONE = 1
 API_VERSION_TWO = 2
+API_VERSION_SEVEN = 7
 UNSUPPORTED_API_VERSION = 3
 
 TEST_EPOCH_TIME = 1346972400
@@ -95,6 +96,30 @@ class BuiltWithTests(unittest.TestCase):
 
 
     @httprettified
+    def test_lookup_version_seven(self):
+        bw = builtwith.BuiltWith('key', api_version=API_VERSION_SEVEN)
+
+
+        HTTPretty.register_uri(HTTPretty.GET, builtwith.ENDPOINTS_BY_API_VERSION[API_VERSION_SEVEN],
+                               body='{"Results": [{"Result": {"Paths": []}}, {"Result": {"Paths": []}}]}')
+
+        HTTPretty.register_uri(HTTPretty.GET, builtwith.ENDPOINTS_BY_API_VERSION[API_VERSION_SEVEN],
+                               body='{"TOPSITE": "%s", "FULL": "%s"}' % (TEST_TOPSITE_DATE,
+                                                                         TEST_FULL_SCAN_DATE_BEFORE))
+
+        result = bw.lookup(['example.com', 'example2.com'])
+
+        qs = HTTPretty.last_request.querystring
+        self.assertEqual(qs.get('KEY'), ['key'])
+        self.assertEqual(qs.get('LOOKUP'), ['example.com,example2.com'])
+        self.assertEqual(2, len(result))
+        self.assertIsInstance(result[0], builtwith.BuiltWithDomainInfo)
+        self.assertDictEqual({'Paths': []}, result[0].api_response_json)
+        self.assertIsInstance(result[1], builtwith.BuiltWithDomainInfo)
+        self.assertDictEqual({'Paths': []}, result[1].api_response_json)
+
+
+    @httprettified
     def test_unsupported_version(self):
         exception_raised = False
 
@@ -165,7 +190,9 @@ class BuiltWithTests(unittest.TestCase):
       self.assertFalse(html5_info['CurrentlyLive'])
 
 
-    def test__convert_string_to_utc_datetime(self):
-        converted_utc_datetime = builtwith._convert_string_to_utc_datetime(TEST_DATETIME_STRING)
+    def test__convert_timestamp_to_utc_datetime(self):
+        converted_utc_datetime = builtwith._convert_timestamp_to_utc_datetime(TEST_DATETIME_STRING)
+        self.assertEqual(converted_utc_datetime, TEST_DATETIME)
 
+        converted_utc_datetime = builtwith._convert_timestamp_to_utc_datetime(TEST_EPOCH_TIME * 1000)
         self.assertEqual(converted_utc_datetime, TEST_DATETIME)
