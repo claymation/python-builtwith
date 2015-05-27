@@ -2,9 +2,9 @@ from setuptools import setup
 
 setup(
     name = "python-builtwith",
-    version = "0.2.1",
-    description = "BuiltWith API versions 1 and 2 client",
-    author = "Clay McClure, Jon Gaulding",
+    version = "0.2.2",
+    description = "BuiltWith API versions 1, 2 and 7 client",
+    author = "Clay McClure, Jon Gaulding, Andrew Harris",
     author_email = "clay@daemons.net",
     url = "https://github.com/claymation/python-builtwith",
     classifiers = [
