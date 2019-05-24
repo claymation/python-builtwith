@@ -1,14 +1,14 @@
 python-builtwith
 ================
 
-## API key
+### API key
 Get you BuiltWith API key here: https://api.builtwith.com/free-api
 SignUp is necessary, one request per second is free of charge.
 
-## Versions
+### Versions
 [BuiltWith][] API versions 1 and 2 client.
 
-## Examples
+### Examples
 
 
 Import and initialize BuiltWith class
