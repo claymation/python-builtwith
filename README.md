@@ -2,7 +2,7 @@ python-builtwith
 ================
 
 ### API key
-Get you BuiltWith API key here: https://api.builtwith.com/free-api
+Get your BuiltWith API key here: https://api.builtwith.com/free-api <br>
 SignUp is necessary, one request per second is free of charge.
 
 ### Versions
