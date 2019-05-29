@@ -1,10 +1,23 @@
 python-builtwith
 ================
 
+### API key
+Get your BuiltWith API key here: https://api.builtwith.com/free-api <br>
+SignUp is necessary, one request per second is free of charge.
+
+### Versions
 [BuiltWith][] API versions 1 and 2 client.
+
+### Examples
+
+
+Import and initialize BuiltWith class
 
     >>> from builtwith import BuiltWith
     >>> bw = BuiltWith(YOUR_API_KEY)
+
+Simple example
+
     >>> bw.lookup('example.com')
     {
         'Domain': 'example.com',
@@ -13,7 +26,9 @@ python-builtwith
         'Technologies': [...],
         'Title': ''
     }
-    >>>
+
+Advanced example
+
     >>> bw = BuiltWith(YOUR_API_KEY, api_version=2)
     >>> example_info = bw.lookup('example.com')
     >>> example_info.available_urls()
