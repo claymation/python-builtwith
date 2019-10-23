@@ -17,7 +17,7 @@ setup(
     ],
     py_modules = ['builtwith'],
     install_requires = [
-        'requests==1.1.0',
+        'requests==2.20.0',
     ],
     test_suite = 'nose.collector',
     tests_require = [
