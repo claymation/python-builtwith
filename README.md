@@ -1,6 +1,8 @@
 python-builtwith
 ================
 
+![Python package](https://github.com/claymation/python-builtwith/workflows/Python%20package/badge.svg)
+
 ### API key
 Get your BuiltWith API key here: https://api.builtwith.com/free-api <br>
 SignUp is necessary, one request per second is free of charge.
