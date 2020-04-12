@@ -19,7 +19,7 @@ class UnsupportedApiVersion(NotImplementedError):
 
 def _convert_timestamp_to_utc_datetime(timestamp):
     if not isinstance(timestamp, int):
-        timestamp = int(re.search('\d+', timestamp).group(0))
+        timestamp = int(re.search(r'\d+', timestamp).group(0))
 
     return datetime.datetime.utcfromtimestamp(timestamp / 1000)
 
@@ -140,7 +140,7 @@ class BuiltWith(object):
             last_updated_data = last_updates_resp.json()
 
             if get_last_full_query and last_updated_data['FULL']:
-              last_full_builtwith_scan_date = datetime.datetime.strptime(last_updated_data['FULL'], '%Y-%m-%d').date()
+                last_full_builtwith_scan_date = datetime.datetime.strptime(last_updated_data['FULL'], '%Y-%m-%d').date()
 
         params = {
             'KEY': self.key,
